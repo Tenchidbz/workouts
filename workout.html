@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Richard + Bill Workout – Oct 6</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9ecee;--card:#fff;--ink:#16222c;--mute:#5b6a76;--line:#cfd6db;--acc:#f2b705;--accink:#16222c;--done:#2f7d5b;--sel:#16222c;--seltxt:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171d;--card:#1a242c;--ink:#eef2f4;--mute:#9aa8b3;--line:#2c3a45;--sel:#f2b705;--seltxt:#16222c;--done:#5cc79a}}
+:root[data-theme="dark"]{--bg:#10171d;--card:#1a242c;--ink:#eef2f4;--mute:#9aa8b3;--line:#2c3a45;--sel:#f2b705;--seltxt:#16222c;--done:#5cc79a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Barlow,system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 120px}
+h1{font:700 34px/1.05 "Barlow Condensed","Arial Narrow",sans-serif;margin:0 0 4px}
+.sub{color:var(--mute);margin:0 0 16px}
+.bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .25s}
+.count{display:flex;justify-content:space-between;font-weight:600;margin:6px 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.card.done{border-color:var(--done)}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.name{font:700 22px/1.15 "Barlow Condensed","Arial Narrow",sans-serif}
+.reps{font-weight:600;white-space:nowrap}
+.cue{color:var(--mute);margin:4px 0 12px;font-size:15px}
+.rounds{display:flex;gap:8px}
+button{font:inherit;color:inherit;cursor:pointer}
+.r{flex:1;min-height:46px;border:2px solid var(--line);background:transparent;border-radius:8px;font-weight:600}
+.r[aria-pressed="true"]{background:var(--sel);border-color:var(--sel);color:var(--seltxt)}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.warm{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px;min-height:56px}
+.box{flex:none;width:26px;height:26px;border:2px solid var(--line);border-radius:6px;display:grid;place-items:center;font-weight:700}
+.warm small{display:block;color:var(--mute);font-size:14px}
+.warm[aria-pressed="true"] .box{background:var(--done);border-color:var(--done);color:#fff}
+.warm[aria-pressed="true"] span:last-child{text-decoration:line-through;color:var(--mute)}
+h2{font:700 22px "Barlow Condensed","Arial Narrow",sans-serif;margin:24px 0 8px}
+ul{margin:0;padding-left:20px}li{margin-bottom:6px}
+.reset{margin-top:20px;background:none;border:1px solid var(--line);border-radius:8px;padding:10px 14px;color:var(--mute)}
+.timer{position:fixed;left:0;right:0;bottom:0;background:var(--ink);color:var(--bg);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
+.timer div{max-width:640px;margin:0 auto;display:flex;gap:8px;align-items:center}
+.clock{font:700 28px "Barlow Condensed","Arial Narrow",sans-serif;min-width:64px}
+.timer button{flex:1;min-height:40px;border:1px solid currentColor;background:transparent;border-radius:8px;color:inherit}
+.timer .ok{background:var(--acc);border-color:var(--acc);color:var(--accink);font-weight:600}
+</style>
+</head>
+<body>
+<main>
+<h1>Richard + Bill workout</h1>
+<p class="sub">Oct 6, 2026 · 3 rounds · rest 60–90 sec between exercises, ~2 min between rounds</p>
+
+<button class="warm" id="walk" aria-pressed="false"><span class="box"></span><span>Dog walk with ~10 min light jogging</span></button>
+
+<div class="bar" aria-hidden="true"><i id="fill"></i></div>
+<div class="count"><span id="n">0 of 21 sets</span><span id="msg"></span></div>
+
+<div id="list"></div>
+
+<h2>Bonus sets</h2>
+<div id="bonus"></div>
+
+<h2>Today's rules</h2>
+<ul>
+<li>Technique first. Repeatable work, not a max-weight test. Stop sets with about 2 clean reps left.</li>
+<li>Plate flow: control the kneel, press, side movement and stand. No fight-training speed.</li>
+<li>Collars on loaded barbells, both sides loaded evenly.</li>
+<li>If form changes, drop the weight.</li>
+<li>If light-headed, stop, sit or lie down safely, and skip heavy lifting until fully recovered.</li>
+</ul>
+<button class="reset" id="reset">Reset checklist</button>
+</main>
+
+<div class="timer"><div>
+<span class="clock" id="clock">0:00</span>
+<button data-s="60">60s</button><button data-s="90">90s</button><button data-s="120">2 min</button>
+<button id="stop">Stop</button>
+</div></div>
+
+<script>
+const EX=[
+["Barbell Deadlift","8","Floor → stand tall → controlled return. No jerking."],
+["Barbell Bent-Over Row","8","Hinge → pull bar toward torso → slow lower."],
+["Half-Kneeling Plate Flow","6 total","Plate at chest → step back to one knee → overhead press → chest → controlled side-to-side → chest → stand. Alternate legs. Start light (10 lb)."],
+["Goblet Squat","8","Weight close to chest → squat under control → stand without bouncing."],
+["Dumbbell Shoulder Press","8","Press overhead smoothly, lower with control. Each person picks own load."],
+["Bicycle Crunch","10 / side","Slow rotation. Opposite elbow toward knee; don't yank the neck."]];
+const BONUS=[
+["Back squat","8 reps","Bill: 8 reps. Richard: a couple, too heavy. 45 lb Olympic bar (7 ft) + two green 25 lb CAP plates, 95 lb total."],
+["Bicep curls","10 reps","Bill: 25 lb dumbbells. Richard: 20 lb dumbbells."],
+["Ab roller","8 reps each","Done at the very end."]];
+const KEY="rb-workout-2026-10-06-v3";
+const DONE=()=>{const o={walk:true,sets:{}};for(let i=0;i<3;i++)o.sets["b"+i]=true;for(let i=0;i<6;i++)for(let r=1;r<=3;r++)o.sets[i+"-"+r]=true;return o};
+let S=DONE();
+try{const x=localStorage.getItem(KEY);if(x){S=JSON.parse(x);}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const list=document.getElementById("list");
+const bon=document.getElementById("bonus");
+BONUS.forEach((b,i)=>{const c=document.createElement("div");c.className="card";c.id="b"+i;
+ c.innerHTML=`<div class="top"><div class="name">${b[0]}</div><div class="reps">${b[1]}</div></div><div class="cue">${b[2]}</div><div class="rounds"><button class="r" data-k="b${i}" aria-pressed="false">Set 1</button></div>`;bon.appendChild(c)});
+bon.addEventListener("click",e=>{const b=e.target.closest(".r");if(!b)return;S.sets[b.dataset.k]=!S.sets[b.dataset.k];save();render()});
+EX.forEach((e,i)=>{
+ const c=document.createElement("div");c.className="card";c.id="c"+i;
+ c.innerHTML=`<div class="top"><div class="name">${e[0]}</div><div class="reps">${e[1]} reps</div></div><div class="cue">${e[2]}</div><div class="rounds">`+
+ [1,2,3].map(r=>`<button class="r" data-k="${i}-${r}" aria-pressed="false">Round ${r}</button>`).join("")+`</div>`;
+ list.appendChild(c);
+});
+function render(){
+ let n=0;
+ document.querySelectorAll(".r").forEach(b=>{const on=!!S.sets[b.dataset.k];b.setAttribute("aria-pressed",on);if(on)n++});
+ EX.forEach((_,i)=>document.getElementById("c"+i).classList.toggle("done",[1,2,3].every(r=>S.sets[i+"-"+r])));
+ BONUS.forEach((_,i)=>document.getElementById("b"+i).classList.toggle("done",!!S.sets["b"+i]));
+ document.getElementById("walk").setAttribute("aria-pressed",S.walk);
+ document.getElementById("walk").querySelector(".box").textContent=S.walk?"✓":"";
+ document.getElementById("n").textContent=n+" of 21 sets";
+ document.getElementById("fill").style.width=(n/21*100)+"%";
+ document.getElementById("msg").textContent=n===21?"All 21 sets done. Control + consistency.":"";
+}
+list.addEventListener("click",e=>{const b=e.target.closest(".r");if(!b)return;S.sets[b.dataset.k]=!S.sets[b.dataset.k];save();render()});
+document.getElementById("walk").onclick=()=>{S.walk=!S.walk;save();render()};
+document.getElementById("reset").onclick=()=>{if(confirm("Clear all checkmarks?")){S={walk:false,sets:{}};save();render()}};
+let t=null,left=0;
+const clock=document.getElementById("clock");
+function show(){clock.textContent=Math.floor(left/60)+":"+String(left%60).padStart(2,"0")}
+function stop(){clearInterval(t);t=null;left=0;show();clock.textContent="0:00"}
+document.querySelectorAll(".timer [data-s]").forEach(b=>b.onclick=()=>{
+ clearInterval(t);left=+b.dataset.s;show();
+ t=setInterval(()=>{left--;show();if(left<=0){clearInterval(t);clock.textContent="Go";try{navigator.vibrate&&navigator.vibrate(300)}catch(e){}}},1000)});
+document.getElementById("stop").onclick=stop;
+render();
+</script>
+</body>
+</html>
